@@ -44,10 +44,10 @@ type city = {
 };
 
 const techSkills = [
-{skillId: 1, skillName: "NextJs"},
-{skillId: 2, skillName: "TypeScript"},
-{skillId: 3, skillName: "TailwindCss"},
-{skillId: 4, skillName: "SQL"}
+{skillId: '1', skillName: "NextJs"},
+{skillId: '2', skillName: "TypeScript"},
+{skillId: '3', skillName: "TailwindCss"},
+{skillId: '4', skillName: "SQL"}
 ]
 
 const cities: city[] = [
@@ -88,7 +88,7 @@ export function CardForm() {
 
   const onSubmit: SubmitHandler<user> = (data) => console.log(data);
   //console.log(watch("city_id"))
-
+  console.log(cbx);
   return (
     <div className="flex items-center p-10 justify-center mt-5 ">
       <form onSubmit={handleSubmit(onSubmit)} className="sm:w-1/2 w-[350px]">
@@ -189,16 +189,21 @@ export function CardForm() {
                 <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="contact_no">Skills</Label>
                {
+                
                 techSkills.map((c)=> (
-                <Checkbox key={c.skillId}
-                  checked={cbx.value?.includes(c.skillId.toString())}
+                  <Label key={c.skillId} htmlFor="skills">
+                <Checkbox value={c.skillId}
+                  checked={cbx.value?.includes(c.skillId)}
                   onCheckedChange={(checked)=>{
-                    return checked ? cbx.onChange([...cbx.value,c.skillId])
-                    :cbx.onChange(cbx.value?.filter(v=> v !== c.skillId.toString()))
+                      return checked 
+                      ? cbx.onChange([cbx.value,c.skillId])
+                      :cbx.onChange(cbx.value?.filter((v)=> v!== c.skillId))
                   }}
                 >
-                  <Label htmlFor="skills">{c.skillName}</Label>
-                </Checkbox>                
+
+                </Checkbox> 
+                 {c.skillName}               
+                </Label>
                 ))}
                
                 
