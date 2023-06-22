@@ -34,21 +34,21 @@ import {
   PopoverTrigger,
 } from "../components/ui/popover";
 import { user } from "../models/user";
-import { data } from "autoprefixer";
 import { Checkbox } from "./ui/checkbox";
-import { c } from "drizzle-orm/query-promise.d-d7b61248";
 
 type city = {
   city_id: number;
   city_name: string;
 };
 
-const techSkills = [
-{skillId: '1', skillName: "NextJs"},
-{skillId: '2', skillName: "TypeScript"},
-{skillId: '3', skillName: "TailwindCss"},
-{skillId: '4', skillName: "SQL"}
-]
+const skills = [
+{skillId: 'NextJs', skillName: "NextJs"},
+{skillId: 'TypeScript', skillName: "TypeScript"},
+{skillId: 'TailwindCss', skillName: "TailwindCss"},
+{skillId: 'SQL', skillName: "SQL"}
+] as const;
+
+
 
 const cities: city[] = [
   {
@@ -88,7 +88,7 @@ export function CardForm() {
 
   const onSubmit: SubmitHandler<user> = (data) => console.log(data);
   //console.log(watch("city_id"))
-  console.log(cbx);
+  //console.log(cbx);
   return (
     <div className="flex items-center p-10 justify-center mt-5 ">
       <form onSubmit={handleSubmit(onSubmit)} className="sm:w-1/2 w-[350px]">
@@ -147,9 +147,9 @@ export function CardForm() {
               </div>
 
               <div>
-                <RadioGroup onValueChange={radio.onChange} defaultValue="male">
+                <RadioGroup  onValueChange={radio.onChange} defaultValue="male">
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="male" />
+                    <RadioGroupItem  value="male" />
                     <Label htmlFor="male">Male</Label>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -190,20 +190,15 @@ export function CardForm() {
                 <Label htmlFor="contact_no">Skills</Label>
                {
                 
-                techSkills.map((c)=> (
-                  <Label key={c.skillId} htmlFor="skills">
-                <Checkbox value={c.skillId}
-                  checked={cbx.value?.includes(c.skillId)}
-                  onCheckedChange={(checked)=>{
-                      return checked 
-                      ? cbx.onChange([cbx.value,c.skillId])
-                      :cbx.onChange(cbx.value?.filter((v)=> v!== c.skillId))
-                  }}
-                >
+                skills.map((c)=> (
+          
+                  <Label key={c.skillId} htmlFor="skills" className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                 <input  type="checkbox" className="w-4 h-4 mr-2 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"  {...register("skills")} value={c.skillId}/>  
+                 {c.skillName}</Label>
 
-                </Checkbox> 
-                 {c.skillName}               
-                </Label>
+                
+                              
+             
                 ))}
                
                 
