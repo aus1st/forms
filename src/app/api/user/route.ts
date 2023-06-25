@@ -40,17 +40,8 @@ export async function POST(request: NextRequest) {
             address: address,
             profile_image_name: profile_image_name,
             city_id: city_id,
-            dob: dob,
+            dob: dob.toString(),
             skills: skills
-            // user_name: user_name,
-            // email: email,
-            // gender: gender,
-            // contact_no: contact_no,
-            // ADDRESS: address,
-            // profile_image_name: profile_image_name,
-            // city_id: city_id,
-            // dob: dob,
-            // skills: skills.map(s=>(s+','))
         }).returning();
         console.log('response', res)
         return NextResponse.json(res);

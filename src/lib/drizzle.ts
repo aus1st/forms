@@ -25,7 +25,7 @@ export const myuser = pgTable('my_users',{
         length: 200
     }),
     city_id: integer('city_id'),
-    dob: timestamp('dob'),
+    dob: date('dob',{mode: 'string'}),
     skills: text('skills').array()
 });
 
