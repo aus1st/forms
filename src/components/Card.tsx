@@ -34,7 +34,8 @@ import {
   PopoverTrigger,
 } from "../components/ui/popover";
 import { user } from "../models/user";
-import { Checkbox } from "./ui/checkbox";
+
+import { useState } from "react";
 
 type city = {
   city_id: number;
@@ -42,13 +43,11 @@ type city = {
 };
 
 const skills = [
-{skillId: 'NextJs', skillName: "NextJs"},
-{skillId: 'TypeScript', skillName: "TypeScript"},
-{skillId: 'TailwindCss', skillName: "TailwindCss"},
-{skillId: 'SQL', skillName: "SQL"}
+  { skillId: "NextJs", skillName: "NextJs" },
+  { skillId: "TypeScript", skillName: "TypeScript" },
+  { skillId: "TailwindCss", skillName: "TailwindCss" },
+  { skillId: "SQL", skillName: "SQL" },
 ] as const;
-
-
 
 const cities: city[] = [
   {
@@ -74,6 +73,8 @@ const cities: city[] = [
 ];
 
 export function CardForm() {
+  const [image, setImage] = useState<File|null>(null);
+  const [createObjectURL, setCreateObjectURL] = useState<string|null>(null);
   const {
     register,
     handleSubmit,
@@ -85,10 +86,42 @@ export function CardForm() {
   const { field: radio } = useController({ name: "gender", control });
   const { field: calender } = useController({ name: "dob", control });
   const { field: cbx } = useController({ name: "skills", control });
+//console.log(watch("profile_image_name"));
 
-  const onSubmit: SubmitHandler<user> = (data) => console.log(data);
+  const onSubmit: SubmitHandler<user> = async (data) => {
+    console.log(data);
+    //  const body = new FormData();
+    //  body.append('file',image as Blob);
+    //  body.append('myUser',JSON.stringify(data));
+    //console.log(body)
+    const response = await fetch('api/user',{
+      method: 'POST',
+    //   headers: {
+    //     "content-type": "multipart/form-data"
+    // },
+      body: JSON.stringify(data)
+    });
+
+  console.log(response);
+return response;
+  }
   //console.log(watch("city_id"))
   //console.log(cbx);
+
+const handleChange = (e: React.ChangeEvent<HTMLInputElement> )=>{
+  e.preventDefault();
+  console.log(e.target.files==null?'':e.target.files[0])
+  const i = e.target.files==null?undefined:e.target.files[0];
+  if(i==null) {
+
+  } else {
+   setImage(i)
+    setCreateObjectURL(URL.createObjectURL(i))
+  }
+  
+}
+
+
   return (
     <div className="flex items-center p-10 justify-center mt-5 ">
       <form onSubmit={handleSubmit(onSubmit)} className="sm:w-1/2 w-[350px]">
@@ -147,9 +180,9 @@ export function CardForm() {
               </div>
 
               <div>
-                <RadioGroup  onValueChange={radio.onChange} defaultValue="male">
+                <RadioGroup onValueChange={radio.onChange} defaultValue="male">
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem  value="male" />
+                    <RadioGroupItem value="male" />
                     <Label htmlFor="male">Male</Label>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -157,64 +190,83 @@ export function CardForm() {
                     <Label htmlFor="female">Female</Label>
                   </div>
                 </RadioGroup>
-               </div>           
-                <div className="flex flex-col space-y-1.5">
+              </div>
+              <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="contact_no">Date of Birth</Label>
 
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant={"outline"}
-                        className={cn(
-                          "w-[280px] justify-start text-left font-normal",
-                          !calender.value && "text-muted-foreground"
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {calender.value ? format(calender.value, "yyyy-MM-dd") : <span>Pick a date</span>}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                      <Calendar
-                        mode="single"
-                        selected={calender.value}
-                        onSelect={calender.onChange}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-              
-              <div className="sm:col-span-2">
-                <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="contact_no">Skills</Label>
-               {
-                
-                skills.map((c)=> (
-          
-                  <Label key={c.skillId} htmlFor="skills" className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-                 <input  type="checkbox" className="w-4 h-4 mr-2 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"  {...register("skills")} value={c.skillId}/>  
-                 {c.skillName}</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-[280px] justify-start text-left font-normal",
+                        !calender.value && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {calender.value ? (
+                        format(calender.value, "yyyy-MM-dd")
+                      ) : (
+                        <span>Pick a date</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={calender.value}
+                      onSelect={calender.onChange}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
 
-                
-                              
-             
-                ))}
-               
-                
+              <div className="sm:col-span-2 mt-5">
+                <div className="flex sm:flex-row sm:items-center flex-col">
+                  <Label htmlFor="contact_no" className="font-bold text-md">
+                    Skills
+                  </Label>
+                  {skills.map((c) => (
+                    <Label
+                      key={c.skillId}
+                      htmlFor="skills"
+                      className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                    >
+                      <input
+                        type="checkbox"
+                        className="w-4 h-4 mr-2 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                        {...register("skills")}
+                        value={c.skillId}
+                      />
+                      {c.skillName}
+                    </Label>
+                  ))}
                 </div>
               </div>
+
+
+              <div className="sm:col-span-2 mt-5">
+               <div className="flex flex-col space-y-1.5">
+                  <Label htmlFor="address">Upload Profile Image</Label>
+                  <Input {...register('profile_image_name')} onChange={(e)=>handleChange(e)} type="file" />
+                </div>
+                </div> 
+
 
               <div className="sm:col-span-2">
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="address">Address</Label>
                   <Textarea
-                    {...register("ADDRESS")}
+                    {...register("address")}
                     id="address"
                     placeholder="input your Address"
                   />
                 </div>
               </div>
+            
+                  
+
             </div>
           </CardContent>
           <CardFooter className="flex sm:justify-end justify-around">
